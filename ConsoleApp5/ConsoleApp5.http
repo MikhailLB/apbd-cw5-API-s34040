@@ -1,0 +1,69 @@
+@ConsoleApp5_HostAddress = http://localhost:5080
+
+### Get all appointments
+GET {{ConsoleApp5_HostAddress}}/api/appointments
+Accept: application/json
+
+### Get all appointments filtered by status and last name
+GET {{ConsoleApp5_HostAddress}}/api/appointments?status=Scheduled&patientLastName=Kowalska
+Accept: application/json
+
+### Get appointment by id
+GET {{ConsoleApp5_HostAddress}}/api/appointments/1
+Accept: application/json
+
+### Get non-existing appointment (expect 404)
+GET {{ConsoleApp5_HostAddress}}/api/appointments/9999
+Accept: application/json
+
+### Create a new appointment (future date)
+POST {{ConsoleApp5_HostAddress}}/api/appointments
+Content-Type: application/json
+
+{
+  "idPatient": 1,
+  "idDoctor": 2,
+  "appointmentDate": "2026-12-20T10:30:00",
+  "reason": "Control visit"
+}
+
+### Create appointment in the past (expect 400)
+POST {{ConsoleApp5_HostAddress}}/api/appointments
+Content-Type: application/json
+
+{
+  "idPatient": 1,
+  "idDoctor": 2,
+  "appointmentDate": "2020-01-01T10:30:00",
+  "reason": "Past visit"
+}
+
+### Create conflicting appointment (run twice, expect 409 on second run)
+POST {{ConsoleApp5_HostAddress}}/api/appointments
+Content-Type: application/json
+
+{
+  "idPatient": 2,
+  "idDoctor": 2,
+  "appointmentDate": "2026-12-22T09:00:00",
+  "reason": "Skin check"
+}
+
+### Update appointment
+PUT {{ConsoleApp5_HostAddress}}/api/appointments/1
+Content-Type: application/json
+
+{
+  "idPatient": 1,
+  "idDoctor": 1,
+  "appointmentDate": "2026-12-25T12:00:00",
+  "status": "Scheduled",
+  "reason": "Rescheduled cardiology consultation",
+  "internalNotes": "Patient asked for a later hour."
+}
+
+### Delete appointment
+DELETE {{ConsoleApp5_HostAddress}}/api/appointments/1
+
+### Delete completed appointment (expect 409)
+DELETE {{ConsoleApp5_HostAddress}}/api/appointments/4
